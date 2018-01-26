@@ -16,56 +16,6 @@ let AAOIAF_BASE_URL = 'https://www.anapioficeandfire.com/api/';
 
 app.get('/', function (req, res) {
   res.send("Hello World, I am Hodor-The GOT bot.");
-  /*
-  var url = AAOIAF_BASE_URL + 'characters/?name=Petyr%20Baelish';
-  axios.get(url)
-    .then(function (response) {
-      var msg = response.data[0].name ;
-    
-      if (response.data[0].aliases.length > 0 || response.data[0].titles.length > 0)
-      {
-        msg += ', also known as ';
-        var aliases = '';
-      for (var i = 0; i < response.data[0].aliases.length;i++)
-      {
-        aliases += response.data[0].aliases[i]+', ';
-      }
-        msg+=aliases;
-        var titles = '';
-        for (var k = 0; k < response.data[0].titles.length; k++) {
-          titles += response.data[0].titles[k] + ', ';
-        }
-        msg += titles;
-    }
-      
-   if (response.data[0].culture)
-      {
-        msg += 'is of the culture: ' + response.data[0].culture+' ';
-      }
-
-      msg += 'The character is played by ' + response.data[0].playedBy + ' and seen in ';
-      for (var j = 0; j < response.data[0].tvSeries.length-1;j++)
-      {
-        msg += response.data[0].tvSeries[j]+', ';
-      }
-      msg += response.data[0].tvSeries[response.data[0].tvSeries.length - 1] +' of Game of Thrones.';
-      console.log(msg); 
-    })
-    .catch(error => {
-      console.log('Could not find any info on', 'name');
-    });  
-*/
-
-  var url = 'https://got-quotes.herokuapp.com/quotes';
-  axios.get(url)
-    .then(function (response) {
-      var msg = response.data.quote; 
-      msg += ' : ' + response.data.character+'.';
-      console.log(msg);
-    })
-    .catch(error => {
-      console.log('Could not find any quote, Sorry!');
-    });  
 });
 
 app.get('/webhook/', function (req, res) {
@@ -192,13 +142,14 @@ function sendGOTData(senderId, messageText)
   }
  if (messageText.toUpperCase() === "QUOTE") {
     getGOTQuote(senderId, arr);
+    return;
   }
   var arr = messageText.split(" ");
   arr[0] = arr[0].toUpperCase();
-  if (arr[0] === "WHOiS") {
+  if (arr[0] === "WHOIS") {
     getGOTCharacter(senderId, arr);
   } else if (arr[0] === "HOUSE") {
-    getCountryCode(senderId, arr); 
+    getGOTHouse(senderId, arr); 
   }  
   else {
     sendMessageToUser(senderId, 'Invalid command. Type "help" to see the list of commands or try again.');
@@ -206,7 +157,45 @@ function sendGOTData(senderId, messageText)
 }
 
 function getGOTCharacter(senderId, arr){
+  showTypingIndicatorToUser(senderId, true);
+  var url = AAOIAF_BASE_URL + 'characters/?name=Petyr%20Baelish';
+  axios.get(url)
+    .then(function (response) {
+      var msg = response.data[0].name;
 
+      if (response.data[0].aliases.length > 0 || response.data[0].titles.length > 0) {
+        msg += ', also known as ';
+        var aliases = '';
+        for (var i = 0; i < response.data[0].aliases.length; i++) {
+          aliases += response.data[0].aliases[i] + ', ';
+        }
+        msg += aliases;
+        var titles = '';
+        for (var k = 0; k < response.data[0].titles.length; k++) {
+          titles += response.data[0].titles[k] + ', ';
+        }
+        msg += titles;
+      }
+
+      if (response.data[0].culture) {
+        msg += 'is of the culture: ' + response.data[0].culture + ' ';
+      }
+
+      msg += 'The character is played by ' + response.data[0].playedBy + ' and seen in ';
+      for (var j = 0; j < response.data[0].tvSeries.length - 1; j++) {
+        msg += response.data[0].tvSeries[j] + ', ';
+      }
+      msg += response.data[0].tvSeries[response.data[0].tvSeries.length - 1] + ' of Game of Thrones.';
+      showTypingIndicatorToUser(senderId, true);
+      sendMessageToUser(senderId, msg);
+      showTypingIndicatorToUser(senderId, false);
+    })
+    .catch(error => {
+      var errorMsg = 'Could not find any information on this character at the moment. Sorry!';
+      showTypingIndicatorToUser(senderId, true);
+      sendMessageToUser(senderId, errorMessage);
+      showTypingIndicatorToUser(senderId, false);
+    });  
 }
 
 function getGOTQuote(senderId, cityName) {
