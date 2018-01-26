@@ -124,6 +124,33 @@ function showTypingIndicatorToUser(senderId, isTyping) {
   });
 }
 
+function sendGOTData(senderId, messageText)
+{
+  if (messageText.toUpperCase() === "HELP") {
+    sendHelpMenu(senderId);
+    return;
+  }
+ if (messageText.toUpperCase() === "QUOTE") {
+    getGOTQuote(senderId);
+    return;
+  }
+  var arr = messageText.split(" ");
+  arr[0] = arr[0].toUpperCase();
+  if (arr[0] === "WHOIS") {
+    var name='';
+    for(var i=1;i<arr.length;i++)
+    {
+      name+=arr[i]+' ';
+    }
+    getGOTCharacter(senderId, name);
+  } else if (arr[0] === "HOUSE") {
+    getGOTHouse(senderId, messageText); 
+  }  
+  else {
+    sendMessageToUser(senderId, 'Invalid command. Type "help" to see the list of commands or try again.');
+  }
+}
+
 function sendHelpMenu(senderId) {
   showTypingIndicatorToUser(senderId, true);
   var message = 'Hodor! You can ask me the following!\n';
@@ -134,31 +161,9 @@ function sendHelpMenu(senderId) {
   sendMessageToUser(senderId, message);
 }
 
-function sendGOTData(senderId, messageText)
-{
-  if (messageText.toUpperCase() === "HELP") {
-    sendHelpMenu(senderId);
-    return;
-  }
- if (messageText.toUpperCase() === "QUOTE") {
-    getGOTQuote(senderId, arr);
-    return;
-  }
-  var arr = messageText.split(" ");
-  arr[0] = arr[0].toUpperCase();
-  if (arr[0] === "WHOIS") {
-    getGOTCharacter(senderId, arr);
-  } else if (arr[0] === "HOUSE") {
-    getGOTHouse(senderId, arr); 
-  }  
-  else {
-    sendMessageToUser(senderId, 'Invalid command. Type "help" to see the list of commands or try again.');
-  }
-}
-
-function getGOTCharacter(senderId, arr){
+function getGOTCharacter(senderId, name){
   showTypingIndicatorToUser(senderId, true);
-  var url = AAOIAF_BASE_URL + 'characters/?name=Petyr%20Baelish';
+  var url = AAOIAF_BASE_URL + 'characters/?name=' + name;
   axios.get(url)
     .then(function (response) {
       var msg = response.data[0].name;
@@ -198,7 +203,7 @@ function getGOTCharacter(senderId, arr){
     });  
 }
 
-function getGOTQuote(senderId, cityName) {
+function getGOTQuote(senderId) {
   showTypingIndicatorToUser(senderId, true);
   var url = 'https://got-quotes.herokuapp.com/quotes';
   axios.get(url)
@@ -215,6 +220,25 @@ function getGOTQuote(senderId, cityName) {
       sendMessageToUser(senderId, errorMessage);
       showTypingIndicatorToUser(senderId, false);
     }); 
+}
+
+function getGOTHouse(senderId, messageText) {
+  showTypingIndicatorToUser(senderId, true);
+  var url = AAOIAF_BASE_URL + 'characters/?house=';
+  axios.get(url)
+    .then(function (response) {
+      var msg = response.data.quote;
+      msg += ' : ' + response.data.character + '.';
+      showTypingIndicatorToUser(senderId, true);
+      sendMessageToUser(senderId, msg);
+      showTypingIndicatorToUser(senderId, false);
+    })
+    .catch(error => {
+      var errorMsg = 'Could not find any quote at the moment. Sorry!';
+      showTypingIndicatorToUser(senderId, true);
+      sendMessageToUser(senderId, errorMessage);
+      showTypingIndicatorToUser(senderId, false);
+    });
 }
 
 app.listen(8080, function () {
