@@ -1,0 +1,7 @@
+- alias: hasura
+  config:
+    configmap: controller-conf
+    namespace: indefeasible23-hasura
+  data: null
+  kubeContext: indefeasible23
+  name: indefeasible23
