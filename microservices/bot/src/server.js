@@ -208,7 +208,7 @@ function getGOTCharacter(senderId, name){
     .catch(error => {
       var errorMsg = 'Could not find any information on this character at the moment. Sorry!';
       showTypingIndicatorToUser(senderId, true);
-      sendMessageToUser(senderId, errorMessage);
+      sendMessageToUser(senderId, errorMsg);
       showTypingIndicatorToUser(senderId, false);
     });  
 }
@@ -227,7 +227,7 @@ function getGOTQuote(senderId) {
     .catch(error => {
       var errorMsg= 'Could not find any quote at the moment. Sorry!';
       showTypingIndicatorToUser(senderId, true);
-      sendMessageToUser(senderId, errorMessage);
+      sendMessageToUser(senderId, errorMsg);
       showTypingIndicatorToUser(senderId, false);
     }); 
 }
@@ -245,16 +245,17 @@ function getGOTHouse(senderId, messageText) {
       var founder = response.data[0].founder;
       showTypingIndicatorToUser(senderId, true);
       sendMessageToUser(senderId, msg);
-      if(founder)
+      /*if(founder)
       {
         getFounder(senderId, founder)
-      }
+      }*/
+      getFounder(senderId, founder);
       showTypingIndicatorToUser(senderId, false);
     })
     .catch(error => {
       var errorMsg = 'Could not find any information on this house at the moment. Sorry!';
       showTypingIndicatorToUser(senderId, true);
-      sendMessageToUser(senderId, errorMessage);
+      sendMessageToUser(senderId, errorMsg);
       showTypingIndicatorToUser(senderId, false);
     });  
 }
@@ -265,8 +266,7 @@ function getFounder(senderId,founder) {
     .then(function (response) {
       var msg = response.data[0].name + ' is the founder of this house.';
       showTypingIndicatorToUser(senderId, true);
-      sendMessageToUser(senderId, msg);
-      showTypingIndicatorToUser(senderId, false);
+      sendMessageToUser(senderId, msg);s
     }); 
 }
 
