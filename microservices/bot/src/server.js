@@ -265,7 +265,7 @@ function getFounder(senderId,founder) {
   showTypingIndicatorToUser(senderId, true);
   axios.get(founder)
     .then(function (response) {
-      var msg = response.data[0].name + ' is the founder of this house.';
+      var msg = response.data.name + ' is the founder of this house.';
       showTypingIndicatorToUser(senderId, true);
       sendMessageToUser(senderId, msg);s
     }); 
