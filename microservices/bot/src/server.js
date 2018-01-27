@@ -243,6 +243,7 @@ function getGOTHouse(senderId, messageText) {
         msg += 'Its famous quotes are: ' + response.data[0].words +'. ';
       }
       var founder = response.data[0].founder;
+      msg+=founder;
       showTypingIndicatorToUser(senderId, true);
       sendMessageToUser(senderId, msg);
       /*if(founder)
