@@ -165,7 +165,7 @@ function sendHelpMenu(senderId) {
 
 function sendBye(senderId) {
   showTypingIndicatorToUser(senderId, true);
-  var message = 'Bye. Keep coming back...like Jon Snow!';
+  var message = 'Bye. Keep coming back...like Jon Snow! ;)';
   sendMessageToUser(senderId, message);
 }
 
