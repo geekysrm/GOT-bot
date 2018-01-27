@@ -16,7 +16,7 @@ let AAOIAF_BASE_URL = 'https://www.anapioficeandfire.com/api/';
 
 app.get('/', function (req, res) {
   res.send("Hello World, I am Hodor-The GOT bot.");
-});
+ });
 
 app.get('/webhook/', function (req, res) {
   if (req.query['hub.verify_token'] === FACEBOOK_VERIFY_TOKEN) {
@@ -126,8 +126,12 @@ function showTypingIndicatorToUser(senderId, isTyping) {
 
 function sendGOTData(senderId, messageText)
 {
-  if (messageText.toUpperCase() === "HELP") {
+  if (messageText.toUpperCase() === "HELP" || messageText.toUpperCase() === "HI" || messageText.toUpperCase() === "HELlO" || messageText.toUpperCase() === "HEY") {
     sendHelpMenu(senderId);
+    return;
+  }
+  if (messageText.toUpperCase() === "BYE" || messageText.toUpperCase() === "GOODBYE") {
+    sendBye(senderId);
     return;
   }
  if (messageText.toUpperCase() === "QUOTE") {
@@ -158,6 +162,12 @@ function sendHelpMenu(senderId) {
   message += '2. quote - To get a random GOT quote\n';
   message += '3. house <House name>. Eg: house algood\n';
   message += '4. help. To get this command list :)';
+  sendMessageToUser(senderId, message);
+}
+
+function sendBye(senderId) {
+  showTypingIndicatorToUser(senderId, true);
+  var message = 'Bye. Keep coming back...like Jon Snow!';
   sendMessageToUser(senderId, message);
 }
 
@@ -224,21 +234,40 @@ function getGOTQuote(senderId) {
 
 function getGOTHouse(senderId, messageText) {
   showTypingIndicatorToUser(senderId, true);
-  var url = AAOIAF_BASE_URL + 'characters/?house=';
+  var url = AAOIAF_BASE_URL + 'characters/?house=' + messageText;
   axios.get(url)
     .then(function (response) {
-      var msg = response.data.quote;
-      msg += ' : ' + response.data.character + '.';
+      msg = response.data[0].name + ' is in the ' + response.data[0].region + ' region. ';
+
+      if (response.data[0].words) {
+        msg += 'Its famous quotes are: ' + response.data[0].words +'. ';
+      }
+      var founder = response.data[0].founder;
       showTypingIndicatorToUser(senderId, true);
       sendMessageToUser(senderId, msg);
+      if(founder)
+      {
+        getFounder(senderId, founder)
+      }
       showTypingIndicatorToUser(senderId, false);
     })
     .catch(error => {
-      var errorMsg = 'Could not find any quote at the moment. Sorry!';
+      var errorMsg = 'Could not find any information on this house at the moment. Sorry!';
       showTypingIndicatorToUser(senderId, true);
       sendMessageToUser(senderId, errorMessage);
       showTypingIndicatorToUser(senderId, false);
-    });
+    });  
+}
+
+function getFounder(senderId,founder) {
+  showTypingIndicatorToUser(senderId, true);
+  axios.get(founder)
+    .then(function (response) {
+      var msg = response.data[0].name + ' is the founder of this house.'
+      showTypingIndicatorToUser(senderId, true);
+      sendMessageToUser(senderId, msg);
+      showTypingIndicatorToUser(senderId, false);
+    }); 
 }
 
 app.listen(8080, function () {
