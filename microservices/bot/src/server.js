@@ -234,7 +234,7 @@ function getGOTQuote(senderId) {
 
 function getGOTHouse(senderId, messageText) {
   showTypingIndicatorToUser(senderId, true);
-  var url = AAOIAF_BASE_URL + 'characters/?house=' + messageText;
+  var url = AAOIAF_BASE_URL + 'houses/?name=' + messageText;
   axios.get(url)
     .then(function (response) {
       msg = response.data[0].name + ' is in the ' + response.data[0].region + ' region. ';
@@ -263,7 +263,7 @@ function getFounder(senderId,founder) {
   showTypingIndicatorToUser(senderId, true);
   axios.get(founder)
     .then(function (response) {
-      var msg = response.data[0].name + ' is the founder of this house.'
+      var msg = response.data[0].name + ' is the founder of this house.';
       showTypingIndicatorToUser(senderId, true);
       sendMessageToUser(senderId, msg);
       showTypingIndicatorToUser(senderId, false);
