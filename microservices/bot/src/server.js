@@ -6,8 +6,6 @@ var axios = require('axios');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-//var asoaif = require('asoiaf-api');
-
 let FACEBOOK_VERIFY_TOKEN = process.env.FACEBOOK_VERIFY_TOKEN;
 let FACEBOOK_PAGE_ACCESS_TOKEN = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
 let FACEBOOK_SEND_MESSAGE_URL = 'https://graph.facebook.com/v2.6/me/messages?access_token=' + FACEBOOK_PAGE_ACCESS_TOKEN;
@@ -157,10 +155,10 @@ function sendGOTData(senderId, messageText)
 
 function sendHelpMenu(senderId) {
   showTypingIndicatorToUser(senderId, true);
-  var message = 'Hodor! You can ask me the following!\n';
+  var message = 'Hodor! :D \nYou can ask me the following!\n';
   message += '1. whois <GOT Character name> Eg: whois Tyrion Lannister - To know about a character\n';
   message += '2. quote - To get a random GOT quote\n';
-  message += '3. house <House name>. Eg: house algood\n';
+  message += '3. house <House name>. Eg: house Algood - To know about a house\n';
   message += '4. help. To get this command list :)';
   sendMessageToUser(senderId, message);
 }
@@ -196,7 +194,7 @@ function getGOTCharacter(senderId, name){
         msg += 'is of the culture: ' + response.data[0].culture + ' ';
       }
 
-      msg += 'The character is played by ' + response.data[0].playedBy + ' and seen in ';
+      msg += '\nThe character is played by ' + response.data[0].playedBy + ' and seen in ';
       for (var j = 0; j < response.data[0].tvSeries.length - 1; j++) {
         msg += response.data[0].tvSeries[j] + ', ';
       }
@@ -243,14 +241,12 @@ function getGOTHouse(senderId, messageText) {
         msg += 'Its famous quotes are: ' + response.data[0].words +'. ';
       }
       var founder = response.data[0].founder;
-      msg+=founder;
       showTypingIndicatorToUser(senderId, true);
       sendMessageToUser(senderId, msg);
-      /*if(founder)
+      if(founder)
       {
-        getFounder(senderId, founder)
-      }*/
-      getFounder(senderId, founder);
+        getFounder(senderId, founder);
+      }
       showTypingIndicatorToUser(senderId, false);
     })
     .catch(error => {
