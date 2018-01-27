@@ -1,12 +1,12 @@
-# Building a Weather Bot for Facebook Messenger on Hasura
+# Building a Game of Thrones Bot for Facebook Messenger on Hasura
 
-![Weather Bot in Action](https://raw.githubusercontent.com/geekysrm/fb-messenger-weather-bot/master/assets/bot_in_action.gif "Weather Bot in Action")
+![GOT Bot in Action](https://raw.githubusercontent.com/geekysrm/GOT-bot/master/assets/bot_in_action.gif "GOT Bot in Action")
 
-This tutorial is a guide to run a **Weather bot on facebook messenger**, which when given a city/place name replies back with the current weather condition and temperatures in °C and °F.
+This is a fun bot built for all the game of thrones fans out there. And this tutorial is a guide to run a **Game of Thrones bot on facebook messenger**, which provides useful info on the show. For example, about a GOT character, about a GOT house, say  a random quote etc.
 
 For the chat bot to function we'll need a server that will receive the messages sent by the Facebook users, process this message and respond back to the user. To send messages back to the server we will use the graph API provided by Facebook. For the Facebook servers to talk to our server, the endpoint URL of our server should be accessible to the Facebook server and should use a secure HTTPS URL. For this reason, running our server locally will not work and instead we need to host our server online. In this tutorial, we are going to deploy our server on Hasura which automatically provides SSL-enabled domains.
 
-You can get the full code for the project from this [Github repository](https://github.com/geekysrm/fb-messenger-weather-bot/).
+You can get the full code for the project from this [Github repository](https://github.com/geekysrm/GOT-bot/).
 
 ## Pre-requisites
 
@@ -21,15 +21,15 @@ You can get the full code for the project from this [Github repository](https://
 * Navigate to https://developers.facebook.com/apps/
 * Click on **'+ Create a new app’**.
 
-![Fb app screen](https://raw.githubusercontent.com/geekysrm/fb-messenger-weather-bot/master/assets/tutorial_1.png "fb app screen")
+![Fb app screen](https://raw.githubusercontent.com/geekysrm/GOT-bot/master/assets/tutorial_1.png "fb app screen")
 
 * Give a display name for your app and your contact email.
 
-![Fb app screen2](https://raw.githubusercontent.com/geekysrm/fb-messenger-weather-bot/master/assets/tutorial_2.png "fb app screen2")
+![Fb app screen2](https://raw.githubusercontent.com/geekysrm/GOT-bot/master/assets/tutorial_2.png "fb app screen2")
 
 * In the select a product screen, hover over **Messenger** and click on **Set Up**
 
-![Fb app screen3](https://raw.githubusercontent.com/geekysrm/fb-messenger-weather-bot/master/assets/tutorial_3.png "fb app screen3")
+![Fb app screen3](https://raw.githubusercontent.com/geekysrm/GOT-bot/master/assets/tutorial_3.png "fb app screen3")
 
 * To start using the bot, we need a facebook page to host our bot.
   + Scroll over to the **Token Generation** section
@@ -37,7 +37,7 @@ You can get the full code for the project from this [Github repository](https://
   + Once you have selected a page, a *Page Access Token* will be generated for you.
   + Save this token somewhere.
 
-![Page token](https://raw.githubusercontent.com/geekysrm/fb-messenger-weather-bot/master/assets/tutorial_4.png "Page token")
+![Page token](https://raw.githubusercontent.com/geekysrm/GOT-bot/master/assets/tutorial_4.png "Page token")
 
 * Now, we need to trigger the facebook app to start sending us messages
   - Switch back to the terminal
@@ -48,19 +48,18 @@ You can get the full code for the project from this [Github repository](https://
 $ curl -X POST "https://graph.facebook.com/v2.6/me/subscribed_apps?access_token=<PAGE_ACCESS_TOKEN>"
 ```
 
-* In this project, we are using https://openweathermap.org/ to get the current weather of a particular place. You need to obtain a API Key from there. Signup for an account and get your unique API Key from your [account page](https://home.openweathermap.org/api_keys).
+* In this project, we are using [An API of ice and fire](https://www.anapioficeandfire.com/) to get info on various characters and houses of GOT. We also will be using [GOT quotes API](https://www.programmableweb.com/api/game-thrones-quotes) to get random GOT quotes. 
+_Both of these are open APIs, so we don't need to obtain any API key to use them._
 
 ### Getting the Hasura project
 
 ```
-$ hasura quickstart geekysrm/fb-messenger-weather-bot
-$ cd fb-messenger-weather-bot
+$ hasura quickstart geekysrm/fb-got-bot
+$ cd fb-got-bot
 # Add FACEBOOK_VERIFY_TOKEN to secrets. This is any pass phrase that you decide on, keep a note on what you are choosing as your verify token, we will be using it later while setting things up for your bot on the facebook developer page.
 $ hasura secrets update bot.fb_verify_token.key <YOUR-VERIFY-TOKEN>
 # Add FACEBOOK_PAGE_ACCESS_TOKEN to secrets
 $ hasura secrets update bot.fb_page_token.key <YOUR-FB-PAGE-ACCESS-TOKEN>
-# Add Open Weather api token to secrets
-$ hasura secrets update bot.open_weather_token.key <YOUR-OPEN-WEATHER-API-TOKEN>
 # Deploy
 $ git add . && git commit -m "Deployment commit"
 $ git push hasura master
@@ -102,7 +101,7 @@ Find the EXTERNAL-URL for the service named `bot` and keep a note of it after ch
 
 In your fb app page, scroll down until you find a card name `Webhooks`. Click on the `setup webhooks` button.
 
-![Enable webhooks2](https://raw.githubusercontent.com/geekysrm/fb-messenger-weather-bot/master/assets/tutorial_5.png "Enable webhooks2")
+![Enable webhooks2](https://raw.githubusercontent.com/geekysrm/GOT-bot/master/assets/tutorial_5.png "Enable webhooks2")
 
 * The `callback URL` is the URL that the facebook servers will hit to verify as well as forward the messages sent to our bot. The nodejs app in this project uses the `/webhook` path as the `callback URL`. Making the `callback URL` https://bot.YOUR-CLUSTER-NAME.hasura-app.io/webhook (in this case -> https://bot.inquisitive20.hasura-app.io/webhook/)
 * The `verify token`is the verify token that you set in your secrets above (in the command `$ hasura secrets update bot.fb_verify_token.key <YOUR-VERIFY-TOKEN>`)
@@ -115,21 +114,21 @@ Next, open up your facebook page.
 
 * Instead, if your button says **+ Add Button**, click on it.
 
-![Add button](https://raw.githubusercontent.com/geekysrm/fb-messenger-weather-bot/master/assets/tutorial_6.png "Add button")
+![Add button](https://raw.githubusercontent.com/geekysrm/GOT-bot/master/assets/tutorial_6.png "Add button")
 
 * Next, click on **Use our messenger bot**. Then, **Get Started** and finally **Add Button**.
 * You will now see that the **+ Add button** has now changed to **Get Started**. Hovering over this will show you a list with an item named **Test this button**. Click on it to start chatting with your bot.
 * Send a message to your bot.
 
-Test out your bot. On receiving a city/place name, it should reply back with the current weather conditions along with the temperatures in °Celsius and °Fahrenheit. 
+Test out your bot. You can find various commands the bot can work on by saying "help". It will show info on characters, houses and can also display a random GOT quote, when asked.
 
 **Here is the bot in action**
 
 
-![Weather Bot in Action](https://raw.githubusercontent.com/geekysrm/fb-messenger-weather-bot/master/assets/bot_in_action.gif "Weather Bot in Action")
+![GOT Bot in Action](https://raw.githubusercontent.com/geekysrm/GOT-bot/master/assets/bot_in_action.gif "GOT Bot in Action")
 
 ## Support
 
-If you happen to get stuck anywhere, feel free to raise an issue [here](https://github.com/geekysrm/fb-messenger-weather-bot/issues)
+If you happen to get stuck anywhere, feel free to raise an issue [here](https://github.com/geekysrm/GOT-bot/issues)
 
-Also, you can contact me via [email](mailto:soumyacool2012@gmail.com) or [twitter](https://twitter.com/SoumyaRnMohanty) or [facebook](https://www.fb.com/geekysrm).
+Also, you can contact me via [email](mailto:soumyacool2012@gmail.com) or [twitter](https://twitter.com/SoumyaRnMohanty) or [facebook](https://www.fb.com/geekysrm) or [Hasura Slack](https://bit.ly/join-hasura-slack) - @geekysrm.
